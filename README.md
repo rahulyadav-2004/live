@@ -1,70 +1,425 @@
-# Getting Started with Create React App
+# 🎥 LiveShop - Real-Time Live Streaming Web App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern live streaming web application built with React, Firebase, and LiveKit. This app allows users to create and join live video streams with real-time chat, authentication, and secure token management.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **Real-time Video Streaming** with LiveKit WebRTC technology
+- **User Authentication** with Firebase Auth (Google, Email/Password)
+- **Live Stream Management** - Create, join, and end streams
+- **Real-time Database** with Firestore for stream metadata
+- **Secure Token Generation** via Firebase Cloud Functions
+- **Responsive Design** with Tailwind CSS
+- **Camera & Microphone Controls** with permission handling
+- **Live Participant Tracking** in real-time
+- **Modern UI/UX** with glassmorphism effects
 
-### `npm start`
+## 🛠️ Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend
+- **React 19** - UI framework with hooks
+- **React Router DOM** - Client-side routing
+- **Tailwind CSS** - Utility-first CSS framework
+- **LiveKit React Components** - Pre-built streaming components
+- **Firebase SDK** - Authentication and Firestore
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend
+- **Firebase Authentication** - User management
+- **Firebase Firestore** - Real-time database
+- **Firebase Cloud Functions** - Serverless backend
+- **LiveKit Server SDK** - Token generation and room management
 
-### `npm test`
+### Infrastructure
+- **LiveKit Cloud** - WebRTC infrastructure
+- **Firebase Hosting** - Frontend deployment
+- **Firebase Functions** - Backend deployment
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## � Prerequisites
 
-### `npm run build`
+Before setting up this project, you'll need:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Node.js** (v18 or later) - [Download here](https://nodejs.org/)
+2. **Firebase Account** - [Sign up here](https://firebase.google.com/)
+3. **LiveKit Account** - [Sign up here](https://livekit.io/)
+4. **Git** - [Download here](https://git-scm.com/)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🔧 Setup Instructions
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Clone and Install
 
-### `npm run eject`
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd live
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Install dependencies
+npm install
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Install Firebase CLI globally
+npm install -g firebase-tools
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Install function dependencies
+cd functions
+npm install
+cd ..
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 2. Firebase Setup
 
-## Learn More
+1. **Create a Firebase Project:**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Click "Create a project"
+   - Enable Google Analytics (optional)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. **Enable Services:**
+   - **Authentication:** Go to Authentication > Sign-in method
+     - Enable Email/Password and Google providers
+   - **Firestore:** Go to Firestore Database > Create database
+     - Start in test mode for development
+   - **Functions:** Functions will be enabled when you deploy
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. **Get Firebase Config:**
+   - Go to Project Settings > General > Your apps
+   - Click "Web app" icon and register your app
+   - Copy the config object
 
-### Code Splitting
+4. **Update Firebase Config:**
+   ```javascript
+   // src/firebase/config.js
+   const firebaseConfig = {
+     apiKey: "your-api-key",
+     authDomain: "your-project.firebaseapp.com",
+     projectId: "your-project-id",
+     storageBucket: "your-project.appspot.com",
+     messagingSenderId: "123456789",
+     appId: "your-app-id"
+   };
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+5. **Login to Firebase CLI:**
+   ```bash
+   firebase login
+   firebase use --add  # Select your project
+   ```
 
-### Analyzing the Bundle Size
+### 3. LiveKit Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. **Create LiveKit Project:**
+   - Go to [LiveKit Console](https://console.livekit.io/)
+   - Create a new project
+   - Note your WebSocket URL (e.g., `wss://myproject-12345.livekit.cloud`)
 
-### Making a Progressive Web App
+2. **Get API Credentials:**
+   - Go to Settings > Keys
+   - Create new API Key/Secret pair
+   - Copy the API Key and Secret
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+3. **Configure Environment Variables:**
+   ```bash
+   # Create .env file in project root
+   echo "REACT_APP_LIVEKIT_WS_URL=wss://your-project.livekit.cloud" > .env
+   ```
 
-### Advanced Configuration
+4. **Configure Functions Environment:**
+   ```bash
+   # Set LiveKit credentials for Firebase Functions
+   firebase functions:config:set \
+     livekit.api_key="your-livekit-api-key" \
+     livekit.secret_key="your-livekit-secret-key" \
+     livekit.ws_url="wss://your-project.livekit.cloud"
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 4. Deploy Backend
 
-### Deployment
+```bash
+# Deploy Firestore indexes
+firebase deploy --only firestore:indexes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+# Deploy Cloud Functions
+firebase deploy --only functions
 
-### `npm run build` fails to minify
+# Note the function URLs (you'll see them in the output)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 5. Start Development
+
+```bash
+# Start the React development server
+npm start
+```
+
+The app will open at [http://localhost:3000](http://localhost:3000).
+
+## 📁 Project Structure
+
+```
+live/
+├── public/                 # Static assets
+├── src/
+│   ├── App.jsx            # Main app component with routing
+│   ├── index.js           # React app entry point
+│   ├── index.css          # Global styles and Tailwind imports
+│   ├── Components/
+│   │   ├── Auth.jsx       # Authentication UI (login/signup)
+│   │   ├── Live.jsx       # Live streaming page (broadcaster)
+│   │   └── Viewer.jsx     # Stream viewing page (audience)
+│   ├── contexts/
+│   │   └── AuthContext.js # Authentication state management
+│   ├── firebase/
+│   │   └── config.js      # Firebase configuration and setup
+│   └── assets/            # Images and static files
+├── functions/
+│   ├── index.js           # Firebase Cloud Functions
+│   └── package.json       # Functions dependencies
+├── firebase.json          # Firebase project configuration
+├── firestore.indexes.json # Firestore composite indexes
+├── .env                   # Environment variables (not in git)
+└── package.json           # Frontend dependencies
+```
+
+## 🔐 How Authentication Works
+
+1. **Firebase Auth Integration:**
+   - `AuthContext.js` provides authentication state globally
+   - Supports Google OAuth and Email/Password
+   - Auto-persists login state across browser sessions
+
+2. **Protected Routes:**
+   - `/live` and `/viewer` require authentication
+   - Redirects to `/auth` if not logged in
+
+3. **User Profile:**
+   - Stores user info in React context
+   - Displays user name and avatar in UI
+
+## 📺 How Live Streaming Works
+
+### For Streamers (Live.jsx):
+
+1. **Create Stream:**
+   - Click "Go Live" button
+   - App calls `createLiveStream` Firebase Function
+   - Function creates LiveKit room and generates broadcaster token
+   - Stream metadata saved to Firestore
+
+2. **Camera Setup:**
+   - Requests camera/microphone permissions
+   - LiveKit automatically publishes video/audio tracks
+   - Displays local video preview
+
+3. **Stream Management:**
+   - View live participant count
+   - End stream anytime
+   - Real-time updates via Firestore
+
+### For Viewers (Viewer.jsx):
+
+1. **Browse Streams:**
+   - View list of active streams from Firestore
+   - See stream titles, creator names, and participant counts
+
+2. **Join Stream:**
+   - Click "Join Stream" button
+   - App calls `joinLiveStream` Firebase Function
+   - Function generates viewer token for the room
+   - Connects to LiveKit room and receives video/audio
+
+3. **Real-time Experience:**
+   - See live video feed from broadcaster
+   - Participant count updates automatically
+   - Leave stream anytime
+
+## ⚡ Firebase Functions API
+
+The backend provides these Cloud Functions:
+
+### `createLiveStream`
+- **Purpose:** Create a new live stream
+- **Auth:** Required
+- **Parameters:** `{ title: string }`
+- **Returns:** `{ roomName: string, token: string }`
+
+### `joinLiveStream`
+- **Purpose:** Join an existing stream as viewer
+- **Auth:** Required  
+- **Parameters:** `{ roomName: string }`
+- **Returns:** `{ token: string }`
+
+### `endLiveStream`
+- **Purpose:** End your live stream
+- **Auth:** Required
+- **Parameters:** `{ roomName: string }`
+- **Returns:** `{ success: boolean }`
+
+### `leaveLiveStream`
+- **Purpose:** Leave a stream you're viewing
+- **Auth:** Required
+- **Parameters:** `{ roomName: string }`
+- **Returns:** `{ success: boolean }`
+
+### `getActiveStreams`
+- **Purpose:** Get list of all active streams
+- **Auth:** Required
+- **Parameters:** None
+- **Returns:** `{ streams: Array }`
+
+## 🎨 UI Components Explained
+
+### Authentication (Auth.jsx)
+- Modern glassmorphism design
+- Toggle between Login/Signup
+- Google OAuth integration
+- Form validation and error handling
+
+### Live Streaming (Live.jsx)
+- Camera preview with controls
+- Stream title input
+- Participant counter
+- Go Live/End Stream buttons
+- Permission handling for camera/mic
+
+### Stream Viewing (Viewer.jsx)
+- Grid of active streams
+- Stream metadata display
+- One-click join functionality
+- Responsive card layout
+
+## 🔍 Database Schema
+
+### Firestore Collections:
+
+#### `streams` Collection:
+```javascript
+{
+  id: "auto-generated",
+  title: "My Live Stream",
+  creatorId: "user-uid",
+  creatorName: "John Doe",
+  roomName: "room_abc123",
+  participantCount: 5,
+  isActive: true,
+  createdAt: timestamp,
+  updatedAt: timestamp
+}
+```
+
+#### `participants` Subcollection:
+```javascript
+{
+  id: "user-uid",
+  name: "Jane Smith",
+  role: "viewer", // or "broadcaster"
+  joinedAt: timestamp
+}
+```
+
+## 🚀 Available Scripts
+
+### Frontend:
+```bash
+npm start          # Start development server (port 3000)
+npm run build      # Build for production
+npm test           # Run tests
+```
+
+### Backend:
+```bash
+firebase deploy --only functions    # Deploy Cloud Functions
+firebase deploy --only firestore    # Deploy Firestore rules/indexes
+firebase deploy                     # Deploy everything
+firebase emulators:start           # Run local emulators
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues:
+
+1. **"Permission denied" Firestore errors:**
+   - Check Firestore security rules
+   - Ensure user is authenticated
+   - Verify Firestore indexes are deployed
+
+2. **LiveKit connection fails:**
+   - Check `.env` file has correct WebSocket URL
+   - Verify Firebase Functions have LiveKit credentials
+   - Check browser console for WebRTC errors
+
+3. **Camera/Microphone not working:**
+   - Check browser permissions
+   - Ensure HTTPS in production
+   - Try different browsers
+
+4. **Functions deployment fails:**
+   - Ensure Firebase CLI is logged in
+   - Check `functions/package.json` dependencies
+   - Verify project ID is correct
+
+### Debug Steps:
+
+1. **Check Browser Console:**
+   - Open Developer Tools (F12)
+   - Look for error messages
+   - Check Network tab for failed requests
+
+2. **Check Firebase Console:**
+   - Functions logs for backend errors
+   - Firestore data to verify writes
+   - Authentication users list
+
+3. **Check LiveKit Console:**
+   - Room activity and participants
+   - WebRTC connection logs
+   - Bandwidth and quality metrics
+
+## 🔒 Security Features
+
+- **Authentication Required:** All streams require user login
+- **Secure Tokens:** LiveKit tokens generated server-side only
+- **Firestore Rules:** Database access restricted to authenticated users
+- **HTTPS Only:** Production deployment uses secure connections
+- **Token Expiration:** LiveKit tokens auto-expire for security
+
+## 🌟 Next Steps & Enhancements
+
+### Beginner-Friendly Additions:
+- Add stream chat functionality
+- Implement screen sharing
+- Add stream recording
+- Create admin dashboard
+- Add user profiles and follow system
+- Implement stream categories/tags
+- Add mobile responsive design improvements
+
+### Advanced Features:
+- Multi-quality streaming (720p, 1080p)
+- Stream analytics and metrics
+- Monetization with tips/subscriptions
+- AI-powered content moderation
+- CDN integration for global scaling
+
+## 📚 Learning Resources
+
+### For Beginners:
+- [React Official Tutorial](https://react.dev/learn)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [LiveKit Documentation](https://docs.livekit.io/)
+- [Tailwind CSS Guide](https://tailwindcss.com/docs)
+
+### Advanced Topics:
+- [WebRTC Fundamentals](https://webrtc.org/getting-started/)
+- [Firebase Security Rules](https://firebase.google.com/docs/rules)
+- [React Performance Optimization](https://react.dev/learn/render-and-commit)
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+For questions or support, please open an issue on GitHub!

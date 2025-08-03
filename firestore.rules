@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Existing rules for streams
+    match /streams/{streamId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Existing rules for users
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null;
+    }
+    
+    // New rules for live chat
+    match /liveChat/{messageId} {
+      // Allow authenticated users to read all messages
+      allow read: if request.auth != null;
+      
+      // Allow authenticated users to create messages
+      allow create: if request.auth != null 
+        && request.auth.uid == request.resource.data.userId
+        && request.resource.data.keys().hasAll(['streamId', 'userId', 'userName', 'message', 'timestamp'])
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 500;
+      
+      // Users can only delete their own messages
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      // No updates allowed to maintain message integrity
+      allow update: if false;
+    }
+  }
+}
